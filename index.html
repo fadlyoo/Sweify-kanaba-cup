@@ -95,6 +95,44 @@
 
   <main class="max-w-4xl mx-auto px-4 pt-5 space-y-6">
 
+    <!-- TOP OF BODY: Scores Summary Hero Section -->
+    <section class="glass-card rounded-2xl p-4 sm:p-5 border-white/10">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-volt"></span>
+          <h2 class="font-display font-bold text-sm sm:text-base uppercase tracking-wider text-white">Scores Summary</h2>
+        </div>
+        <span id="summaryLeaderBadge" class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-volt/15 text-volt">
+          Leader: —
+        </span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-pitch-900/90 border border-white/5 rounded-xl p-3.5 text-center">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Matches Played</p>
+          <p id="statMatches" class="font-display font-bold text-2xl sm:text-3xl text-white mt-1">0</p>
+        </div>
+        <div class="bg-pitch-900/90 border border-white/5 rounded-xl p-3.5 text-center">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Goals</p>
+          <p id="statGoals" class="font-display font-bold text-2xl sm:text-3xl text-volt mt-1">0</p>
+        </div>
+        <div class="bg-pitch-900/90 border border-white/5 rounded-xl p-3.5 text-center">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Goals / Match</p>
+          <p id="statAvgGoals" class="font-display font-bold text-2xl sm:text-3xl text-cyan mt-1">0.0</p>
+        </div>
+        <div class="bg-pitch-900/90 border border-white/5 rounded-xl p-3.5 text-center">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Top Scorer</p>
+          <p id="statTopScorer" class="font-display font-bold text-base sm:text-lg text-amber-300 mt-2 truncate">—</p>
+        </div>
+      </div>
+
+      <!-- Latest Match Highlight Strip -->
+      <div id="latestMatchStrip" class="hidden mt-3 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-300">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Latest Result</span>
+        <span id="latestMatchText" class="font-semibold text-white"></span>
+      </div>
+    </section>
+
     <!-- Mode Status Banner -->
     <div id="modeBanner" class="glass-card rounded-2xl px-4 py-3 flex items-center justify-between gap-3 text-xs">
       <div class="flex items-center gap-2 text-slate-300">
@@ -167,22 +205,6 @@
       </div>
     </section>
 
-    <!-- Tournament Summary Stats -->
-    <section class="grid grid-cols-3 gap-3">
-      <div class="glass-card rounded-2xl p-4 text-center">
-        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Matches Played</p>
-        <p id="statMatches" class="font-display font-bold text-2xl sm:text-3xl text-white mt-1">0</p>
-      </div>
-      <div class="glass-card rounded-2xl p-4 text-center">
-        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Goals</p>
-        <p id="statGoals" class="font-display font-bold text-2xl sm:text-3xl text-volt mt-1">0</p>
-      </div>
-      <div class="glass-card rounded-2xl p-4 text-center">
-        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Goals / Match</p>
-        <p id="statAvgGoals" class="font-display font-bold text-2xl sm:text-3xl text-cyan mt-1">0.0</p>
-      </div>
-    </section>
-
     <!-- Live Standings Leaderboard -->
     <section class="glass-card rounded-2xl overflow-hidden">
       <div class="px-5 py-4 border-b border-white/10 flex flex-wrap items-center justify-between gap-2">
@@ -238,16 +260,28 @@
 
   </main>
 
-  <!-- Admin Login Modal -->
+  <!-- Admin Panel Modal -->
   <div id="adminModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="glass-card rounded-2xl max-w-md w-full p-6 border border-white/15 shadow-2xl space-y-4">
+    <div class="glass-card rounded-2xl max-w-md w-full p-6 border border-white/15 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between">
-        <h3 class="font-display font-bold text-xl uppercase text-white">Admin Access</h3>
+        <h3 class="font-display font-bold text-xl uppercase text-white">Admin Panel</h3>
         <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
       </div>
 
+      <!-- Firebase Database Link Connection Field (Always accessible in Admin Panel) -->
+      <div class="p-3.5 rounded-xl bg-pitch-900/90 border border-white/10 space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-cyan">Firebase Database Link</label>
+          <span id="dbSavedToast" class="hidden text-[10px] font-bold text-emerald-400">Connected!</span>
+        </div>
+        <input id="fbDbUrlInput" type="url" placeholder="https://your-project-default-rtdb.firebaseio.com" class="w-full bg-pitch-950 border border-white/15 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan" />
+        <button type="button" onclick="updateDatabaseUrl()" class="w-full py-2 rounded-lg bg-cyan/15 hover:bg-cyan/25 border border-cyan/40 text-cyan font-bold text-xs uppercase tracking-wider transition">
+          Connect & Sync Database
+        </button>
+      </div>
+
       <!-- Logged Out Form -->
-      <div id="adminLoginForm" class="space-y-3">
+      <div id="adminLoginForm" class="space-y-3 pt-1">
         <p class="text-xs text-slate-400 leading-relaxed">
           Sign in with your Firebase Admin account to unlock adding/deleting scores and managing players.
         </p>
@@ -315,9 +349,15 @@
   </datalist>
 
   <script>
-    // Hardcoded Firebase Realtime Database URL & Room Path
-    const DB_URL = "https://sewify-kanaba-scores-default-rtdb.asia-southeast1.firebasedatabase.app";
+    // Default Firebase Realtime Database URL & Room Path
+    const DEFAULT_DB_URL = "https://sewify-kanaba-scores-default-rtdb.asia-southeast1.firebasedatabase.app";
     const ROOM_PATH = "rooms/KANABA-CUP-FC27";
+
+    function normalizeDbUrl(url) {
+      return String(url || DEFAULT_DB_URL).trim().replace(/\/+$/, "");
+    }
+
+    let dbUrl = normalizeDbUrl(localStorage.getItem("kc_fb_dburl") || DEFAULT_DB_URL);
 
     // Application State
     let state = {
@@ -337,6 +377,25 @@
       return Boolean(auth.idToken && auth.apiKey);
     }
 
+    // Save & Connect Firebase Database URL from Admin Panel
+    async function updateDatabaseUrl() {
+      const input = document.getElementById("fbDbUrlInput");
+      const raw = input.value.trim();
+      if (!raw || !raw.startsWith("http")) {
+        alert("Please enter a valid Firebase Realtime Database URL (starting with https://).");
+        return;
+      }
+      dbUrl = normalizeDbUrl(raw);
+      localStorage.setItem("kc_fb_dburl", dbUrl);
+      input.value = dbUrl;
+
+      const toast = document.getElementById("dbSavedToast");
+      toast.classList.remove("hidden");
+      setTimeout(() => toast.classList.add("hidden"), 2500);
+
+      await fetchCloudData();
+    }
+
     // Sanitize players list: always remove "Kanaba" if ever present
     function sanitizePlayers(list) {
       const cleaned = (Array.isArray(list) ? list : ["Sewify"])
@@ -349,7 +408,7 @@
     async function fetchCloudData() {
       setSyncStatus("syncing", "Syncing...");
       try {
-        const res = await fetch(`${DB_URL}/${ROOM_PATH}.json`);
+        const res = await fetch(`${dbUrl}/${ROOM_PATH}.json`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
@@ -361,7 +420,6 @@
           state.players = cleanedPlayers;
           state.matches = rawMatches.filter(Boolean).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-          // If "Kanaba" was still sitting in the database and Admin is signed in, clean it permanently
           if (isAdmin() && rawPlayers.some(p => String(p).trim().toLowerCase() === "kanaba")) {
             await saveCloudData();
           }
@@ -375,7 +433,7 @@
       } catch (err) {
         console.error(err);
         setSyncStatus("error", "Offline");
-        showAlert("Could not reach database. Check connection or Firebase Rules.");
+        showAlert("Could not reach Firebase database. Check the Database Link in Admin Panel or Firebase Rules.");
       }
     }
 
@@ -409,7 +467,7 @@
 
       setSyncStatus("syncing", "Saving...");
       try {
-        const url = `${DB_URL}/${ROOM_PATH}.json?auth=${encodeURIComponent(auth.idToken)}`;
+        const url = `${dbUrl}/${ROOM_PATH}.json?auth=${encodeURIComponent(auth.idToken)}`;
         const res = await fetch(url, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -442,7 +500,7 @@
       } catch (err) {
         console.error(err);
         setSyncStatus("error", "Save Failed");
-        showAlert("Failed to save to Firebase. Check your internet connection.");
+        showAlert("Failed to save to Firebase. Check your internet connection or Database Link.");
         return false;
       }
     }
@@ -658,11 +716,12 @@
 
     // Render Functions
     function renderAll() {
+      const standings = computeStandings();
       updateAdminUI();
+      renderStats(standings);
       renderPlayerSelects();
-      renderStandings();
+      renderStandings(standings);
       renderMatches();
-      renderStats();
     }
 
     function updateAdminUI() {
@@ -704,8 +763,7 @@
       }
     }
 
-    function renderStandings() {
-      const rows = computeStandings();
+    function renderStandings(rows) {
       const tbody = document.getElementById("standingsBody");
       const admin = isAdmin();
 
@@ -823,7 +881,7 @@
       }).join("");
     }
 
-    function renderStats() {
+    function renderStats(standings) {
       const totalMatches = state.matches.length;
       const totalGoals = state.matches.reduce((sum, m) => sum + (m.homeScore || 0) + (m.awayScore || 0), 0);
       const avg = totalMatches > 0 ? (totalGoals / totalMatches).toFixed(1) : "0.0";
@@ -831,11 +889,35 @@
       document.getElementById("statMatches").textContent = totalMatches;
       document.getElementById("statGoals").textContent = totalGoals;
       document.getElementById("statAvgGoals").textContent = avg;
+
+      // Leader badge
+      const leader = standings.find(r => r.mp > 0);
+      document.getElementById("summaryLeaderBadge").textContent = leader
+        ? `Leader: ${leader.name} (${leader.pts} PTS)`
+        : "Leader: —";
+
+      // Top Scorer
+      const byGoals = [...standings].filter(r => r.gf > 0).sort((a, b) => b.gf - a.gf);
+      document.getElementById("statTopScorer").textContent = byGoals.length > 0
+        ? `${byGoals[0].name} (${byGoals[0].gf})`
+        : "—";
+
+      // Latest Match Highlight Strip
+      const latestStrip = document.getElementById("latestMatchStrip");
+      if (state.matches.length > 0) {
+        const m = state.matches[0];
+        document.getElementById("latestMatchText").textContent = `${m.homePlayer} ${m.homeScore} - ${m.awayScore} ${m.awayPlayer}`;
+        latestStrip.classList.remove("hidden");
+      } else {
+        latestStrip.classList.add("hidden");
+      }
     }
 
     // Modal & Status Helpers
     function openAdminModal() {
       const admin = isAdmin();
+      document.getElementById("fbDbUrlInput").value = dbUrl;
+      document.getElementById("dbSavedToast").classList.add("hidden");
       document.getElementById("adminLoginForm").classList.toggle("hidden", admin);
       document.getElementById("adminLoggedInView").classList.toggle("hidden", !admin);
       document.getElementById("adminAuthError").classList.add("hidden");
