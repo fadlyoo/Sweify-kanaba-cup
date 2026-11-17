@@ -95,9 +95,9 @@
 
   <main class="max-w-4xl mx-auto px-4 pt-5 space-y-6">
 
-    <!-- TOP OF BODY: Scores Summary Hero Section -->
-    <section class="glass-card rounded-2xl p-4 sm:p-5 border-white/10">
-      <div class="flex items-center justify-between mb-3">
+    <!-- TOP OF BODY: Scores Summary & Head-to-Head Hero Section -->
+    <section class="glass-card rounded-2xl p-4 sm:p-5 border-white/10 space-y-4">
+      <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-volt"></span>
           <h2 class="font-display font-bold text-sm sm:text-base uppercase tracking-wider text-white">Scores Summary</h2>
@@ -107,6 +107,7 @@
         </span>
       </div>
 
+      <!-- Overall Tournament Metrics -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div class="bg-pitch-900/90 border border-white/5 rounded-xl p-3.5 text-center">
           <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Matches Played</p>
@@ -126,8 +127,67 @@
         </div>
       </div>
 
+      <!-- Head-to-Head Comparison Bar with Saved Player Dropdowns -->
+      <div class="bg-pitch-900/95 border border-white/10 rounded-xl p-4 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-cyan flex items-center gap-1.5">
+            <span>⚔️</span> Head-to-Head Rivalry
+          </span>
+          <span id="h2hTotalBadge" class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/10 text-white">
+            0 Total Matches
+          </span>
+        </div>
+
+        <!-- Dropdown Selectors -->
+        <div class="grid grid-cols-11 gap-2 items-center">
+          <div class="col-span-5">
+            <select id="h2hPlayerASelect" onchange="renderHeadToHead()" aria-label="Select Player A" class="w-full bg-pitch-800 border border-volt/30 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-bold text-volt focus:outline-none focus:border-volt truncate"></select>
+          </div>
+          <div class="col-span-1 flex justify-center">
+            <button type="button" onclick="swapH2HPlayers()" title="Swap Players" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/15 border border-white/10 text-slate-300 text-xs font-bold flex items-center justify-center transition">
+              ⇄
+            </button>
+          </div>
+          <div class="col-span-5">
+            <select id="h2hPlayerBSelect" onchange="renderHeadToHead()" aria-label="Select Player B" class="w-full bg-pitch-800 border border-cyan/30 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-bold text-cyan focus:outline-none focus:border-cyan truncate"></select>
+          </div>
+        </div>
+
+        <!-- H2H Scoreboard Breakdown -->
+        <div id="h2hStatsContainer" class="pt-1 space-y-2.5">
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="bg-pitch-950/90 border border-white/5 rounded-lg py-2 px-1">
+              <p id="h2hWinsA" class="font-display font-bold text-xl sm:text-2xl text-volt">0</p>
+              <p id="h2hLabelA" class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 truncate px-1">Wins</p>
+            </div>
+            <div class="bg-pitch-950/90 border border-white/5 rounded-lg py-2 px-1">
+              <p id="h2hDraws" class="font-display font-bold text-xl sm:text-2xl text-slate-300">0</p>
+              <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Draws</p>
+            </div>
+            <div class="bg-pitch-950/90 border border-white/5 rounded-lg py-2 px-1">
+              <p id="h2hWinsB" class="font-display font-bold text-xl sm:text-2xl text-cyan">0</p>
+              <p id="h2hLabelB" class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 truncate px-1">Wins</p>
+            </div>
+          </div>
+
+          <!-- Proportional Win Bar + H2H Goals -->
+          <div class="space-y-1">
+            <div class="w-full h-2 rounded-full bg-pitch-950 overflow-hidden flex">
+              <div id="h2hBarA" style="width: 33.3%" class="bg-volt transition-all duration-300"></div>
+              <div id="h2hBarD" style="width: 33.4%" class="bg-slate-600 transition-all duration-300"></div>
+              <div id="h2hBarB" style="width: 33.3%" class="bg-cyan transition-all duration-300"></div>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-slate-400">
+              <span id="h2hGoalsA">0 Goals</span>
+              <span id="h2hNote" class="text-slate-500">Select two players</span>
+              <span id="h2hGoalsB">0 Goals</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Latest Match Highlight Strip -->
-      <div id="latestMatchStrip" class="hidden mt-3 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-300">
+      <div id="latestMatchStrip" class="hidden pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-300">
         <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Latest Result</span>
         <span id="latestMatchText" class="font-semibold text-white"></span>
       </div>
@@ -268,16 +328,21 @@
         <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
       </div>
 
-      <!-- Firebase Database Link Connection Field (Always accessible in Admin Panel) -->
+      <!-- Firebase Database Link Connection Field -->
       <div class="p-3.5 rounded-xl bg-pitch-900/90 border border-white/10 space-y-2">
         <div class="flex items-center justify-between">
           <label class="block text-[11px] font-bold uppercase tracking-wider text-cyan">Firebase Database Link</label>
           <span id="dbSavedToast" class="hidden text-[10px] font-bold text-emerald-400">Connected!</span>
         </div>
         <input id="fbDbUrlInput" type="url" placeholder="https://your-project-default-rtdb.firebaseio.com" class="w-full bg-pitch-950 border border-white/15 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan" />
-        <button type="button" onclick="updateDatabaseUrl()" class="w-full py-2 rounded-lg bg-cyan/15 hover:bg-cyan/25 border border-cyan/40 text-cyan font-bold text-xs uppercase tracking-wider transition">
-          Connect & Sync Database
-        </button>
+        <div class="flex gap-2">
+          <button type="button" onclick="updateDatabaseUrl()" class="flex-1 py-2 rounded-lg bg-cyan/15 hover:bg-cyan/25 border border-cyan/40 text-cyan font-bold text-xs uppercase tracking-wider transition">
+            Connect & Sync
+          </button>
+          <button type="button" onclick="copyShareableVisitorLink()" class="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/15 text-slate-200 font-bold text-xs uppercase tracking-wider transition">
+            Copy Link
+          </button>
+        </div>
       </div>
 
       <!-- Logged Out Form -->
@@ -349,7 +414,7 @@
   </datalist>
 
   <script>
-    // Default Firebase Realtime Database URL & Room Path
+    // Default Firebase Realtime Database URL & Room Path (Loads automatically for every visitor)
     const DEFAULT_DB_URL = "https://sewify-kanaba-scores-default-rtdb.asia-southeast1.firebasedatabase.app";
     const ROOM_PATH = "rooms/KANABA-CUP-FC27";
 
@@ -357,7 +422,22 @@
       return String(url || DEFAULT_DB_URL).trim().replace(/\/+$/, "");
     }
 
-    let dbUrl = normalizeDbUrl(localStorage.getItem("kc_fb_dburl") || DEFAULT_DB_URL);
+    function resolveInitialDbUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const queryDb = params.get("db");
+      if (queryDb && queryDb.startsWith("http")) {
+        const clean = normalizeDbUrl(queryDb);
+        localStorage.setItem("kc_fb_dburl", clean);
+        return clean;
+      }
+      const stored = localStorage.getItem("kc_fb_dburl");
+      if (stored && stored.startsWith("http")) {
+        return normalizeDbUrl(stored);
+      }
+      return normalizeDbUrl(DEFAULT_DB_URL);
+    }
+
+    let dbUrl = resolveInitialDbUrl();
 
     // Application State
     let state = {
@@ -389,11 +469,30 @@
       localStorage.setItem("kc_fb_dburl", dbUrl);
       input.value = dbUrl;
 
+      const nextUrl = new URL(window.location.href);
+      if (dbUrl !== normalizeDbUrl(DEFAULT_DB_URL)) {
+        nextUrl.searchParams.set("db", dbUrl);
+      } else {
+        nextUrl.searchParams.delete("db");
+      }
+      window.history.replaceState({}, "", nextUrl.toString());
+
       const toast = document.getElementById("dbSavedToast");
       toast.classList.remove("hidden");
       setTimeout(() => toast.classList.add("hidden"), 2500);
 
       await fetchCloudData();
+    }
+
+    function copyShareableVisitorLink() {
+      const shareUrl = new URL(window.location.href);
+      if (dbUrl !== normalizeDbUrl(DEFAULT_DB_URL)) {
+        shareUrl.searchParams.set("db", dbUrl);
+      } else {
+        shareUrl.searchParams.delete("db");
+      }
+      navigator.clipboard?.writeText(shareUrl.toString());
+      alert("Visitor link copied! Anyone who opens this link will load the live scores automatically.");
     }
 
     // Sanitize players list: always remove "Kanaba" if ever present
@@ -404,11 +503,11 @@
       return cleaned.length > 0 ? Array.from(new Set(cleaned)) : ["Sewify"];
     }
 
-    // Fetch live data from Firebase Realtime Database
+    // Fetch live data from Firebase Realtime Database automatically for all visitors
     async function fetchCloudData() {
       setSyncStatus("syncing", "Syncing...");
       try {
-        const res = await fetch(`${dbUrl}/${ROOM_PATH}.json`);
+        const res = await fetch(`${dbUrl}/${ROOM_PATH}.json`, { cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
@@ -714,12 +813,23 @@
         .sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || a.name.localeCompare(b.name));
     }
 
+    // All saved players (union of roster + any player names in match history, excluding Kanaba)
+    function getAllKnownPlayers() {
+      const set = new Set(state.players);
+      state.matches.forEach(m => {
+        if (m.homePlayer && m.homePlayer.toLowerCase() !== "kanaba") set.add(m.homePlayer);
+        if (m.awayPlayer && m.awayPlayer.toLowerCase() !== "kanaba") set.add(m.awayPlayer);
+      });
+      return Array.from(set);
+    }
+
     // Render Functions
     function renderAll() {
       const standings = computeStandings();
       updateAdminUI();
       renderStats(standings);
       renderPlayerSelects();
+      renderHeadToHead();
       renderStandings(standings);
       renderMatches();
     }
@@ -746,20 +856,136 @@
     }
 
     function renderPlayerSelects() {
+      // Admin Match Logger dropdowns
       const homeSel = document.getElementById("homePlayerSelect");
       const awaySel = document.getElementById("awayPlayerSelect");
       const prevHome = homeSel.value;
       const prevAway = awaySel.value;
 
-      const options = state.players.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
-      homeSel.innerHTML = options;
-      awaySel.innerHTML = options;
+      const rosterOptions = state.players.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+      homeSel.innerHTML = rosterOptions;
+      awaySel.innerHTML = rosterOptions;
 
       if (state.players.includes(prevHome)) homeSel.value = prevHome;
       if (state.players.includes(prevAway)) {
         awaySel.value = prevAway;
       } else if (state.players.length > 1) {
         awaySel.value = state.players[1];
+      }
+
+      // Top-of-page Head-to-Head dropdowns
+      const allPlayers = getAllKnownPlayers();
+      const h2hA = document.getElementById("h2hPlayerASelect");
+      const h2hB = document.getElementById("h2hPlayerBSelect");
+      const prevA = h2hA.value;
+      const prevB = h2hB.value;
+
+      const h2hOptions = allPlayers.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+      h2hA.innerHTML = h2hOptions;
+      h2hB.innerHTML = h2hOptions;
+
+      if (allPlayers.includes(prevA)) {
+        h2hA.value = prevA;
+      } else if (allPlayers.length > 0) {
+        h2hA.value = allPlayers[0];
+      }
+
+      if (allPlayers.includes(prevB) && prevB !== h2hA.value) {
+        h2hB.value = prevB;
+      } else if (allPlayers.length > 1) {
+        h2hB.value = allPlayers.find(p => p !== h2hA.value) || allPlayers[1];
+      } else if (allPlayers.length === 1) {
+        h2hB.value = allPlayers[0];
+      }
+    }
+
+    function swapH2HPlayers() {
+      const h2hA = document.getElementById("h2hPlayerASelect");
+      const h2hB = document.getElementById("h2hPlayerBSelect");
+      const temp = h2hA.value;
+      h2hA.value = h2hB.value;
+      h2hB.value = temp;
+      renderHeadToHead();
+    }
+
+    function renderHeadToHead() {
+      const playerA = document.getElementById("h2hPlayerASelect").value;
+      const playerB = document.getElementById("h2hPlayerBSelect").value;
+
+      const totalBadge = document.getElementById("h2hTotalBadge");
+      const winsAEl = document.getElementById("h2hWinsA");
+      const drawsEl = document.getElementById("h2hDraws");
+      const winsBEl = document.getElementById("h2hWinsB");
+      const labelAEl = document.getElementById("h2hLabelA");
+      const labelBEl = document.getElementById("h2hLabelB");
+      const goalsAEl = document.getElementById("h2hGoalsA");
+      const goalsBEl = document.getElementById("h2hGoalsB");
+      const noteEl = document.getElementById("h2hNote");
+      const barA = document.getElementById("h2hBarA");
+      const barD = document.getElementById("h2hBarD");
+      const barB = document.getElementById("h2hBarB");
+
+      labelAEl.textContent = playerA ? `${playerA} Wins` : "Wins";
+      labelBEl.textContent = playerB ? `${playerB} Wins` : "Wins";
+
+      if (!playerA || !playerB || playerA === playerB) {
+        totalBadge.textContent = "0 Total Matches";
+        winsAEl.textContent = "0";
+        drawsEl.textContent = "0";
+        winsBEl.textContent = "0";
+        goalsAEl.textContent = "0 Goals";
+        goalsBEl.textContent = "0 Goals";
+        noteEl.textContent = playerA === playerB ? "Choose two different players" : "Add players to compare";
+        barA.style.width = "33.3%";
+        barD.style.width = "33.4%";
+        barB.style.width = "33.3%";
+        return;
+      }
+
+      const h2hMatches = state.matches.filter(m =>
+        (m.homePlayer === playerA && m.awayPlayer === playerB) ||
+        (m.homePlayer === playerB && m.awayPlayer === playerA)
+      );
+
+      let winsA = 0, winsB = 0, draws = 0, goalsA = 0, goalsB = 0;
+
+      h2hMatches.forEach(m => {
+        const isAHome = m.homePlayer === playerA;
+        const scoreA = isAHome ? (m.homeScore || 0) : (m.awayScore || 0);
+        const scoreB = isAHome ? (m.awayScore || 0) : (m.homeScore || 0);
+
+        goalsA += scoreA;
+        goalsB += scoreB;
+
+        if (scoreA > scoreB) winsA++;
+        else if (scoreB > scoreA) winsB++;
+        else draws++;
+      });
+
+      const total = h2hMatches.length;
+      totalBadge.textContent = `${total} Total ${total === 1 ? "Match" : "Matches"}`;
+      winsAEl.textContent = winsA;
+      drawsEl.textContent = draws;
+      winsBEl.textContent = winsB;
+      goalsAEl.textContent = `${goalsA} Goals`;
+      goalsBEl.textContent = `${goalsB} Goals`;
+
+      if (total === 0) {
+        noteEl.textContent = "No head-to-head matches yet";
+        barA.style.width = "33.3%";
+        barD.style.width = "33.4%";
+        barB.style.width = "33.3%";
+      } else {
+        const pctA = (winsA / total) * 100;
+        const pctD = (draws / total) * 100;
+        const pctB = (winsB / total) * 100;
+        barA.style.width = `${pctA}%`;
+        barD.style.width = `${pctD}%`;
+        barB.style.width = `${pctB}%`;
+
+        if (winsA > winsB) noteEl.textContent = `${playerA} leads by ${winsA - winsB}`;
+        else if (winsB > winsA) noteEl.textContent = `${playerB} leads by ${winsB - winsA}`;
+        else noteEl.textContent = "Rivalry tied";
       }
     }
 
@@ -890,19 +1116,16 @@
       document.getElementById("statGoals").textContent = totalGoals;
       document.getElementById("statAvgGoals").textContent = avg;
 
-      // Leader badge
       const leader = standings.find(r => r.mp > 0);
       document.getElementById("summaryLeaderBadge").textContent = leader
         ? `Leader: ${leader.name} (${leader.pts} PTS)`
         : "Leader: —";
 
-      // Top Scorer
       const byGoals = [...standings].filter(r => r.gf > 0).sort((a, b) => b.gf - a.gf);
       document.getElementById("statTopScorer").textContent = byGoals.length > 0
         ? `${byGoals[0].name} (${byGoals[0].gf})`
         : "—";
 
-      // Latest Match Highlight Strip
       const latestStrip = document.getElementById("latestMatchStrip");
       if (state.matches.length > 0) {
         const m = state.matches[0];
@@ -970,7 +1193,7 @@
       return String(str).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
     }
 
-    // Boot & Poll Every 10 Seconds for Live Updates
+    // Boot & Poll Every 10 Seconds for Live Updates Automatically for Every Visitor
     renderAll();
     fetchCloudData();
     setInterval(fetchCloudData, 10000);
